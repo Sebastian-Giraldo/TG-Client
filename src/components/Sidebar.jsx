@@ -16,8 +16,8 @@ function Sidebar() {
     switch (pathname) {
       case "/dashboard":
         return "Dashboard";
-      case "/perfil":
-        return "Perfil";
+      case "/verificarPerfil":
+        return "Verifica tu perfil";
       case "/configuracion":
         return "Configuración";
       case "/reportes":
@@ -58,8 +58,8 @@ function Sidebar() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/perfil">
-                    <i className="bi bi-person"></i> Perfil
+                  <Link to="/verificarPerfil">
+                    <i className="bi bi-person"></i> Verifica tu perfil
                   </Link>
                 </li>
                 <li>
