@@ -5,10 +5,13 @@ import Register from "../pages/register/Register";
 import Footer from "../components/Footer";
 import { UserProvider } from "../context/UserContext"; // Importa el Provider
 import Dashboar from "../pages/dashboard/Dashboard";
+import Consultas from "../pages/consultas/Consultas";
+import VerificarPerfil from "../pages/validar perfil/VerificarPerfil";
+
 
 function RouterApp() {
     return (
-        <UserProvider> {/* 👈 Aquí empieza el UserProvider */}
+        <UserProvider> 
             <BrowserRouter>
                 <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
                     <Routes>
@@ -16,7 +19,8 @@ function RouterApp() {
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/dashboard" element={<Dashboar />} />
-                        <Route path="/consultas" element={<Dashboar />} />
+                        <Route path="/consultas" element={<Consultas />} />
+                        <Route path="/verificarPerfil" element={<VerificarPerfil/>} />
                     </Routes>
                     <Footer />
                 </div>
