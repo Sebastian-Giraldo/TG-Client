@@ -1,0 +1,17 @@
+.landing-container {
+    flex: 1; /* Para que el contenedor crezca y empuje el footer */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    min-height: 0; /* IMPORTANTE para que flexbox no cause overflow */
+  }
+  
+  .landing-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: center;
+  }
+  
