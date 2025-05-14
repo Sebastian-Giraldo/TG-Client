@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate, Link } from "react-router-dom"; // 👈 Agrega Link
+import {
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+} from "firebase/auth";
+import { useNavigate, Link } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import { auth } from "../../firebase/firebase";
 import "./stylesLogin.css";
@@ -12,10 +15,12 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [resetMsg, setResetMsg] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setResetMsg("");
 
     try {
       const userCredential = await signInWithEmailAndPassword(
@@ -25,8 +30,6 @@ function Login() {
       );
       const newUser = userCredential.user;
       const token = await newUser.getIdToken();
-
-      // 🔥 AQUÍ: guardas el usuario tanto en memoria como en localStorage
       const userData = {
         uid: newUser.uid,
         name: newUser.displayName || "",
@@ -34,15 +37,31 @@ function Login() {
         photoURL: newUser.photoURL || "",
         accessToken: token,
       };
-
-      setUser(userData); // En memoria (contexto)
-      localStorage.setItem("user", JSON.stringify(userData)); // En navegador
-
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
       navigate("/dashboard");
     } catch (err) {
       setError(
-        "Error en el inicio de sesión<br> Usuario y/o contraseña incorrectos "
+        "Error en el inicio de sesión<br> Usuario y/o contraseña incorrectos"
       );
+    }
+  };
+
+  const handleResetPassword = async () => {
+    setError("");
+    setResetMsg("");
+    if (!email) {
+      setResetMsg("Por favor ingresa tu correo para recuperar tu contraseña.");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setResetMsg(
+        `✔️ Te hemos enviado un correo a ${email}. Revisa tu bandeja de entrada.`
+      );
+    } catch (err) {
+      console.error(err);
+      setResetMsg("❌ No se pudo enviar el correo de recuperación.");
     }
   };
 
@@ -67,22 +86,43 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          {/* {error && <p className="error">{error}</p>} */}
+
           {error && (
             <p
               className="error"
               dangerouslySetInnerHTML={{ __html: error }}
-            ></p>
+            />
           )}
 
-          <div className="login-buttons">
+          <button
+            type="button"
+            className="forgot-password"
+            onClick={handleResetPassword}
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
+
+          {resetMsg && (
+            <p
+              className={`reset-message ${
+                resetMsg.startsWith("✔️") ? "success" : "error"
+              }`}
+            >
+              {resetMsg}
+            </p>
+          )}
+
+          <div className="login-buttons" style={{ display: "flex", gap: "1rem" }}>
             <button type="submit" className="btn btn-primary">
               Iniciar sesión
             </button>
-
-            <Link to="/register" className="btn btn-outline-primary">
+            <button
+              type="button"
+              className="btn btn-outline-primary"
+              onClick={() => navigate("/register")}
+            >
               Registrarse
-            </Link>
+            </button>
           </div>
         </form>
       </div>

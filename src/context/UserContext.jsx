@@ -1,30 +1,46 @@
-import { createContext, useState, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../firebase/firebase";
 
-const userContext = createContext();
+// 1. Crea el contexto
+const UserContext = createContext();
 
-const useUser = () => {
-    const context = useContext(userContext); // 🛠️ Ojo, aquí también debes usar useContext, no createContext otra vez.
-    if (!context) {
-        throw new Error('Error creando contexto');
-    }
-    return context;
+// 2. Hook para consumirlo
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (context === undefined) {
+    throw new Error("useUser debe usarse dentro de UserProvider");
+  }
+  return context;
 };
 
-function UserProvider({ children }) {
-    const [user, setUser] = useState({
-        uid: "", // ID de Firebase
-        name: "",
-        email: "",
-        photoURL: "",
-        accessToken: "",
+// 3. Provider simplificado sin navegación automática
+export function UserProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [initializing, setInitializing] = useState(true);
+
+  // Escucha cambios en la autenticación sin redirigir
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setInitializing(false);
     });
+    return unsubscribe;
+  }, []);
 
-    return (
-        <userContext.Provider value={{ user, setUser }}>
-            {children}
-        </userContext.Provider>
-    );
+  // Función de logout
+  const logout = async () => {
+    await signOut(auth);
+    setUser(null);
+    localStorage.removeItem("user");
+  };
+
+  // Evita renderizar antes de saber si estamos inicializando
+  if (initializing) return null;
+
+  return (
+    <UserContext.Provider value={{ user, setUser, logout }}>
+      {children}
+    </UserContext.Provider>
+  );
 }
-
-// Exportar bien:
-export { userContext, useUser, UserProvider };
