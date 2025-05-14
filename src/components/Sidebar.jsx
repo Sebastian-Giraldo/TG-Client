@@ -53,8 +53,8 @@ function Sidebar() {
             <nav className="sidebar-nav">
               <ul>
                 <li>
-                  <Link to="/dashboard">
-                    <i className="bi bi-speedometer2"></i> Dashboard
+                  <Link to="/profileHistory">
+                    <i className="bi bi-speedometer2"></i> Perfiles analizados
                   </Link>
                 </li>
                 <li>
@@ -74,7 +74,7 @@ function Sidebar() {
                 </li>
                 <li>
                   <Link to="/consultas">
-                    <i className="bi bi-question-circle"></i> Consultas
+                    <i className="bi bi-question-circle"></i> Pregúntale al modelo
                   </Link>
                 </li>
               </ul>

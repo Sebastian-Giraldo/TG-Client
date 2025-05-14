@@ -1,0 +1,112 @@
+/* stylesProfileHistory.css */
+
+.ph-container {
+  background: #fff;               /* tarjeta blanca */
+  padding: 2rem;                  /* relleno interior */
+  border-radius: 12px;            /* esquinas redondeadas */
+  max-width: 700px;               /* ancho máximo */
+  margin: 2rem auto;              /* centrado horizontal + margen arriba/abajo */
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.ph-title {
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.ph-searchForm {
+  display: flex;
+  flex-wrap: wrap;                /* para colapsar en móviles */
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Input de búsqueda */
+.ph-input {
+  flex: 1;
+  max-width: 300px;               /* ancho idéntico al login */
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color .2s;
+}
+.ph-input:focus {
+  outline: none;
+  border-color: #1e90ff;
+}
+
+/* Botones */
+.ph-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.ph-btn.ph-search {
+  background: #1e90ff;
+  color: #fff;
+  border: none;
+}
+.ph-btn.ph-search:hover {
+  background: #006fdd;
+}
+.ph-btn.ph-clear {
+  background: transparent;
+  color: #1e90ff;
+  border: 2px solid #1e90ff;
+}
+.ph-btn.ph-clear:hover {
+  background: #1e90ff;
+  color: #fff;
+}
+
+/* Para que en desktop los botones queden al lado del input */
+@media (min-width: 600px) {
+  .ph-searchForm {
+    flex-wrap: nowrap;
+  }
+}
+
+/* Mensaje de error */
+.ph-error {
+  color: #c00;
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
+
+/* Tabla de resultados */
+.ph-results {
+  overflow-x: auto;
+}
+.ph-results table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.ph-results th,
+.ph-results td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+.ph-results th {
+  background: #f9f9f9;
+  font-weight: 500;
+}
+
+/* Responsive: en móvil que la tabla no se salga */
+@media (max-width: 500px) {
+  .ph-results th:nth-child(3),
+  .ph-results td:nth-child(3),
+  .ph-results th:nth-child(4),
+  .ph-results td:nth-child(4) {
+    display: none; /* oculta columnas secundarias */
+  }
+}
