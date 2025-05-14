@@ -29,7 +29,7 @@ function Consultas() {
 
       <div className="consultas-container">
         <div className="consultas-card">
-          <h2>¿Quieres saber si el comentario de publicación revela información sensible?</h2>
+          <h2>¿Quieres saber si el caption de tú publicación revela información sensible?</h2>
           <form onSubmit={handleSubmit}>
             <textarea
               className="form-control"

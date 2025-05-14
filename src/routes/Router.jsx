@@ -7,6 +7,7 @@ import { UserProvider } from "../context/UserContext"; // Importa el Provider
 import Dashboar from "../pages/dashboard/Dashboard";
 import Consultas from "../pages/consultas/Consultas";
 import VerificarPerfil from "../pages/validar perfil/VerificarPerfil";
+import ProfileHistory from './../pages/perfiles/ProfileHistory';
 
 
 function RouterApp() {
@@ -21,6 +22,7 @@ function RouterApp() {
                         <Route path="/dashboard" element={<Dashboar />} />
                         <Route path="/consultas" element={<Consultas />} />
                         <Route path="/verificarPerfil" element={<VerificarPerfil/>} />
+                        <Route path="/profileHistory" element={<ProfileHistory/>} />
                     </Routes>
                     <Footer />
                 </div>
