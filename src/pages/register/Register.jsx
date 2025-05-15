@@ -23,7 +23,7 @@ function Register() {
     // dominio institucional
     const domain = email.split("@")[1];
     if (domain !== "correounivalle.edu.co") {
-      setError("Solo correos institucionales de la Universidad del Valle.");
+      setError("Solo se permiten correos institucionales de la Universidad del Valle.");
       return;
     }
 
