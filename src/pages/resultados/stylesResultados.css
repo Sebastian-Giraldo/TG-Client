@@ -1,0 +1,98 @@
+/* stylesResultados.css */
+
+/* 1. Contenedor principal: Sidebar + contenido */
+.resultados-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* 2. Área de contenido: fondo, padding y scroll */
+.resultados-content {
+  flex: 1;
+  background-color: #e0f7fa;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* 3. Título principal, centrado */
+.resultados-title {
+  text-align: center;
+  font-size: 2rem;
+  color: #007fff;
+  margin-bottom: 2rem;
+}
+
+/* 4. Grid de dos columnas con ancho máximo y centrado */
+.models-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;   /* dos columnas iguales */
+  gap: 2rem;                        /* espacio uniforme */
+  
+  max-width: 1000px;                /* no crecer más allá */
+  margin: 0 auto;                   /* centrar en la pantalla */
+  align-items: start;               /* alinea bloques arriba */
+}
+
+/* En móvil, pasa a una columna */
+@media (max-width: 768px) {
+  .models-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 5. Cada bloque de modelo: flex-col ocupando toda la celda */
+.model-block {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Título interno de cada bloque */
+.model-block h2 {
+  text-align: center;
+  color: #007fff;
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+}
+
+/* 6. Card: fondo blanco, sombra, y flex para expandirse igual */
+.image-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  flex-direction: column;
+  flex: 1;                /* cada card ocupa igual proporción de su bloque */
+  overflow: hidden;
+}
+
+/* Espacio interno de cada card */
+.image-card + .image-card {
+  margin-top: 1rem;       /* separación entre la primera y segunda card */
+}
+
+/* 7. Wrapper de la imagen: altura fija para uniformidad */
+.image-wrapper {
+  width: 100%;
+  height: 220px;
+  background: #f7f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-wrapper img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* 8. Descripción: ocupa el resto de la card */
+.image-desc {
+  padding: 1rem;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+  flex: 1;                /* se estira para igualar alturas */
+}

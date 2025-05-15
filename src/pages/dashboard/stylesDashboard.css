@@ -1,0 +1,47 @@
+/* Contenedor principal con Sidebar a la izquierda */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Área de contenido: fondo claro y centrado */
+.dashboard-content {
+  flex: 1;
+  background-color: #e0f7fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+/* Tarjeta blanca con sombra y esquinas redondeadas */
+.info-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Título del dato curioso */
+.info-card-title {
+  color: #007fff;
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+}
+
+/* Texto explicativo */
+.info-card-text {
+  color: #333333;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+/* Invitación final */
+.info-card-invite {
+  color: #007fff;
+  font-weight: bold;
+  font-size: 1rem;
+}

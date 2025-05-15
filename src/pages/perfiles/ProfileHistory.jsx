@@ -2,53 +2,52 @@
 import { useState, useEffect } from "react";
 import ResultadosTable from "../../components/ResultadoTable";
 import Sidebar from "../../components/Sidebar";
-import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+} from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import "./stylesProfileHistory.css";
 
 export default function ProfileHistory() {
   const [allProfiles, setAllProfiles] = useState([]);
-  const [filteredProfiles, setFilteredProfiles] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState(null);
 
-  // 1) Carga inicial desde Firestore
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const perPage = 5;
+
+  // Carga inicial
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        // 1. Referencia + Query ordenando por tu campo real "Fecha chequeo"
         const profilesCol = collection(db, "profiles");
-        const q = query(
-          profilesCol,
-          orderBy("Fecha chequeo", "desc"),
-          limit(1000)
-        );
+        const q = query(profilesCol, orderBy("checkedAt", "desc"), limit(1000));
         const snapshot = await getDocs(q);
 
-        // 2. Mapea cada doc a lo que tu tabla espera
         const docs = snapshot.docs.map((d) => {
           const data = d.data();
-
-          // extrae label y score de tu string "Sensible (score: 0.76)"
-          const m =
-            data["Clasificación"].match(/(.+)\s*\(score:\s*([\d.]+)\)/i) || [];
-          const label = m[1] || data["Clasificación"];
-          const score = m[2] ? parseFloat(m[2]) : 0;
-
           return {
             id: d.id,
-            username: data["Usuario"], // tu campo real
-            classification: { label, score }, // objeto anidado
-            checkedAt: data["Fecha chequeo"], // Firestore Timestamp
-            reasons: (data["Razones"] || []).map((r) => ({
-              detail: r.detalle, // adapta detalle → detail
-              map_link: r.map_link, // ya existe map_link
-            })),
+            username: d.id,
+            classification: {
+              label: data.classification?.label ?? "No sensible",
+              score: data.classification?.score ?? 0,
+            },
+            checkedAt: data.checkedAt?.toDate() ?? null,
+            reasons: data.reasons?.map((r) => ({
+              type: r.type,
+              detail: r.detail,
+              map_link: r.map_link,
+            })) ?? [],
           };
         });
 
         setAllProfiles(docs);
-        setFilteredProfiles(docs);
         setError(null);
       } catch (err) {
         console.error(err);
@@ -57,36 +56,49 @@ export default function ProfileHistory() {
     };
     fetchProfiles();
   }, []);
-  // 2) handleSearch
-  const handleSearch = (e) => {
-    e.preventDefault();
-    let term = searchTerm.trim();
-    // quita arroba inicial si la hay
-    if (term.startsWith("@")) term = term.slice(1);
-    if (term === "") {
-      // vacío => muestra todo
-      setFilteredProfiles(allProfiles);
-      setError(null);
-      return;
-    }
-    // filtra con contains (case-insensitive)
-    const filtered = allProfiles.filter((p) =>
-      p.username.toLowerCase().includes(term.toLowerCase())
-    );
-    setFilteredProfiles(filtered);
-    if (filtered.length === 0) {
-      setError(`No existen registros con el perfil “${searchTerm.trim()}”`);
-    } else {
-      setError(null);
-    }
-  };
 
-  // 3) handleClear
+  // Filtrado + paginación calculados
+  const normalizedTerm = searchTerm.trim().replace(/^@/, "").toLowerCase();
+  const filtered = normalizedTerm
+    ? allProfiles.filter((p) =>
+        p.username.toLowerCase().includes(normalizedTerm)
+      )
+    : allProfiles;
+
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const startIdx = (currentPage - 1) * perPage;
+  const currentSlice = filtered.slice(startIdx, startIdx + perPage);
+
+  // Handlers
+  const handleSearch = (e) => {
+  e.preventDefault();
+
+  const term = searchTerm.trim().replace(/^@/, "").toLowerCase();
+  if (term === "") {
+    setError(null);
+    return setCurrentPage(1);
+  }
+
+  const filtered = allProfiles.filter((p) =>
+    p.username.toLowerCase().includes(term)
+  );
+
+  setCurrentPage(1);
+  if (filtered.length === 0) {
+    setError(`No existen registros con el perfil “${searchTerm.trim()}”`);
+  } else {
+    setError(null);
+  }
+
+};
+
   const handleClear = () => {
     setSearchTerm("");
-    setFilteredProfiles(allProfiles);
+    setCurrentPage(1);
     setError(null);
   };
+  const goPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
+  const goNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
 
   return (
     <>
@@ -100,7 +112,6 @@ export default function ProfileHistory() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar por username..."
-            onKeyDown={(e) => e.key === "Enter" && handleSearch(e)}
           />
           <button className="ph-btn ph-search" type="submit">
             Buscar
@@ -117,8 +128,31 @@ export default function ProfileHistory() {
         {error && <div className="ph-error">{error}</div>}
 
         <div className="ph-results">
-          <ResultadosTable allResults={filteredProfiles} />
+          <ResultadosTable allResults={currentSlice} />
         </div>
+
+        {/* Controles de paginación */}
+        {filtered.length > perPage && (
+          <div className="ph-pagination">
+            <button
+              className="ph-pageBtn"
+              onClick={goPrev}
+              disabled={currentPage === 1}
+            >
+              Anterior
+            </button>
+            <span className="ph-pageInfo">
+              Página {currentPage} de {totalPages}
+            </span>
+            <button
+              className="ph-pageBtn"
+              onClick={goNext}
+              disabled={currentPage === totalPages}
+            >
+              Siguiente
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

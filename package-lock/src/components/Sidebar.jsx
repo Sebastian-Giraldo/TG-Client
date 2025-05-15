@@ -18,8 +18,10 @@ function Sidebar() {
         return "Dashboard";
       case "/verificarPerfil":
         return "Verifica tu perfil";
-      case "/resultados":
-        return "Resultados reportes";
+      case "/configuracion":
+        return "Configuración";
+      case "/reportes":
+        return "Reportes";
       case "/consultas":
         return "Consultas";
       default:
@@ -61,8 +63,13 @@ function Sidebar() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/resultados">
-                    <i className="bi bi-file-earmark-text"></i> Resultados modelos entrenados
+                  <Link to="/configuracion">
+                    <i className="bi bi-gear"></i> Configuración
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/reportes">
+                    <i className="bi bi-file-earmark-text"></i> Reportes
                   </Link>
                 </li>
                 <li>

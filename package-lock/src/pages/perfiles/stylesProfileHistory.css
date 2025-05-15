@@ -110,29 +110,3 @@
     display: none; /* oculta columnas secundarias */
   }
 }
-.ph-pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 1.5rem 0;
-  gap: 1rem;
-}
-
-.ph-pageBtn {
-  padding: 0.5rem 1rem;
-  border: 1px solid #007fff;
-  background: #fff;
-  color: #007fff;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.ph-pageBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.ph-pageInfo {
-  font-weight: 500;
-  color: #333;
-}

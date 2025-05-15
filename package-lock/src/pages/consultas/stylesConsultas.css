@@ -1,0 +1,81 @@
+/* contenedor general centrado */
+.consultas-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-height: 100vh;
+  background: linear-gradient(to top left, #a0e9fd, #caf4ff);
+}
+
+/* tarjeta blanca */
+.consultas-card {
+  background: white;
+  padding: 3rem 2rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+/* textarea */
+.form-control {
+  width: 100%;
+  height: 120px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  margin: 1.5rem 0;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  resize: vertical;
+}
+
+/* botones */
+.consultas-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* sección de resultado */
+.resultado {
+  margin-top: 2rem;
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  text-align: left;
+}
+
+/* tabla de resultados */
+.resultado-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.resultado-table th,
+.resultado-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.resultado-table th {
+  background: #f7f7f7;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.resultado-table td {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* hover en filas */
+.resultado-table tbody tr:hover {
+  background: #fafafa;
+}
