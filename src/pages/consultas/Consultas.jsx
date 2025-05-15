@@ -6,19 +6,36 @@ function Consultas() {
   const API = process.env.REACT_APP_API_URL;
   const [inputText, setInputText] = useState("");
   const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+
+    if (!API) {
+      setError("⚠️ La URL del backend no está configurada.");
+      return;
+    }
+
+    if (!inputText.trim()) {
+      setError("⚠️ Por favor, escribe un texto para analizar.");
+      return;
+    }
+
     try {
       const res = await fetch(`${API}/sentiment/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: inputText }),
       });
-      if (!res.ok) throw new Error(res.statusText);
+
+      if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+
       const data = await res.json();
       setResult(data.result);
     } catch (err) {
+      setError("Error al consultar el modelo: " + err.message);
+      setResult(null);
       console.error("Error al consultar el modelo:", err);
     }
   };
@@ -49,6 +66,7 @@ function Consultas() {
                 onClick={() => {
                   setInputText("");
                   setResult(null);
+                  setError(null);
                 }}
               >
                 Limpiar
@@ -56,7 +74,8 @@ function Consultas() {
             </div>
           </form>
 
-          {/* Único bloque de resultado */}
+          {error && <div className="error-message">{error}</div>}
+
           {result && (
             <div className="resultado">
               <h3>Resultado:</h3>
