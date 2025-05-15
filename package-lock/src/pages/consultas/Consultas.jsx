@@ -29,9 +29,7 @@ function Consultas() {
 
       <div className="consultas-container">
         <div className="consultas-card">
-          <h2>
-            ¿Quieres saber si el caption de tu publicación revela información sensible?
-          </h2>
+          <h2>¿Quieres saber si el caption de tú publicación revela información sensible?</h2>
           <form onSubmit={handleSubmit}>
             <textarea
               className="form-control"
@@ -40,9 +38,7 @@ function Consultas() {
               placeholder="Escribe una frase..."
             />
             <div className="consultas-buttons">
-              <button type="submit" className="btn btn-primary">
-                Analizar
-              </button>
+              <button type="submit" className="btn btn-primary">Analizar</button>
               <button
                 type="button"
                 className="btn btn-outline-primary"
@@ -56,7 +52,6 @@ function Consultas() {
             </div>
           </form>
 
-          {/* Único bloque de resultado */}
           {result && (
             <div className="resultado">
               <h3>Resultado:</h3>
@@ -68,10 +63,12 @@ function Consultas() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>{result.label}</td>
-                    <td>{result.score != null ? result.score.toFixed(4) : "N/A"}</td>
-                  </tr>
+                  {result.map((row, i) => (
+                    <tr key={i}>
+                      <td>{row.label}</td>
+                      <td>{row.score.toFixed(4)}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

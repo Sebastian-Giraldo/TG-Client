@@ -1,9 +1,11 @@
 // src/routes/RouterApp.jsx
+import React from "react";
 import {
   BrowserRouter,
   Routes,
   Route,
   Navigate,
+  Outlet,
 } from "react-router-dom";
 
 import Landing from "../pages/landing/Landing";
@@ -17,7 +19,6 @@ import Footer from "../components/Footer";
 
 import { UserProvider, useUser } from "../context/UserContext";
 import ProtectedRoute from "../components/ProtectedRoute";
-import Resultados from "../pages/resultados/Resultados";
 
 // Componente para redirigir en caso de ruta no existente
 function CatchAll() {
@@ -41,7 +42,6 @@ function RouterApp() {
             <Route path="/consultas" element={<Consultas />} />
             <Route path="/profileHistory" element={<ProfileHistory />} />
             <Route path="/verificarPerfil" element={<VerificarPerfil />} />
-            <Route path="/resultados" element={<Resultados />} />
           </Route>
 
           {/* catch-all */}
