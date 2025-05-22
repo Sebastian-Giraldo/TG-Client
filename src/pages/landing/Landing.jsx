@@ -5,7 +5,7 @@ function Landing() {
   return (
     <div className="landing-container">
       <div className="landing-card">
-        <h1 className="text-primary">Bienvenido a DataZeroApp 🚀</h1>
+        <h1 className="text-primary">Bienvenido a DataZero App 🚀</h1>
         <p className="mt-4 lead">
           Prototipo de software web para el análisis y evaluación de la
           exposición de datos con Procesamiento de Lenguaje Natural (PLN)
