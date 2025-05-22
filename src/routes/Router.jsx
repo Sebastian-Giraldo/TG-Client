@@ -36,6 +36,7 @@ function RouterApp() {
           <Route path="/register" element={<Register />} />
 
           {/* protegidas */}
+          
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/consultas" element={<Consultas />} />
