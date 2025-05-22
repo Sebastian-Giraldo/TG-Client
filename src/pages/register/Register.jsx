@@ -1,47 +1,69 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import { auth } from "../../firebase/firebase";
+import ModalVerifyCode from "../../components/ModalVerifyCode";
 import "./stylesRegister.css";
 
-function Register() {
+export default function Register() {
+  const API = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
   const { setUser } = useUser();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPassword, setConfirm] = useState("");
   const [error, setError] = useState("");
+
+  // pasos: "form" o "verify"
+  const [step, setStep] = useState("form");
+  const [inputCode, setCode] = useState("");
+  const [codeError, setCError] = useState("");
 
   const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).{8,}$/;
 
-  const handleRegister = async (e) => {
+  async function handleRegister(e) {
     e.preventDefault();
     setError("");
 
-    // dominio institucional
-    const domain = email.split("@")[1];
-    if (domain !== "correounivalle.edu.co") {
-      setError("Solo se permiten correos institucionales de la Universidad del Valle.");
-      return;
+    if (email.split("@")[1] !== "correounivalle.edu.co") {
+      return setError("Solo se permiten correos de la Universidad del Valle.");
     }
-
-    // coincide password / confirm
     if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden.");
-      return;
+      return setError("Las contraseñas no coinciden.");
     }
-
-    // fuerza mínima de seguridad
     if (!PASSWORD_REGEX.test(password)) {
-      setError(
-        "La contraseña debe tener al menos 8 caracteres, incluyendo mayúsculas, minúsculas, números y un caracter especial."
+      return setError(
+        "La contraseña debe tener al menos 8 caracteres. Debe contener al menos una mayuscula, una minuscula y un carater especial"
       );
-      return;
     }
 
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
     try {
+      const res = await fetch(`${API}/verify-email/send-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code }),
+      });
+      if (!res.ok) throw new Error("falló envío");
+      setStep("verify");
+    } catch {
+      setError("Error enviando el correo de verificación.");
+    }
+  }
+
+  async function handleVerify() {
+    setCError("");
+    try {
+      const res = await fetch(`${API}/verify-email/check-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code: inputCode }),
+      });
+      const { valid } = await res.json();
+      if (!valid) return setCError("Código incorrecto");
+
       const { user: newUser } = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -50,68 +72,66 @@ function Register() {
       const token = await newUser.getIdToken();
       const userData = {
         uid: newUser.uid,
-        name: newUser.displayName || "",
         email: newUser.email,
-        photoURL: newUser.photoURL || "",
         accessToken: token,
       };
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
       navigate("/dashboard");
-    } catch (err) {
-      // códigos de error de Firebase
-      if (err.code === "auth/email-already-in-use") {
-        setError("El correo ya está en uso.");
-      } else {
-        setError("Error al registrar. Revisa la consola.");
-        console.error(err);
-      }
+    } catch {
+      setCError("Error durante la verificación.");
     }
-  };
+  }
 
   return (
-    <div className="register-container">
-      <div className="register-card">
-        <h2>Crear cuenta</h2>
-        <form onSubmit={handleRegister}>
-          <input
-            type="email"
-            placeholder="Correo institucional"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    <>
+      {step === "verify" && (
+        <ModalVerifyCode
+          email={email}
+          inputCode={inputCode}
+          setInputCode={setCode}
+          codeError={codeError}
+          onVerify={handleVerify}
+        />
+      )}
 
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          <input
-            type="password"
-            placeholder="Confirmar contraseña"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-
-          {error && <p className="text-danger">{error}</p>}
-
-          <div className="register-buttons">
-            <button type="submit" className="btn btn-primary">
-              Registrarse
-            </button>
-            <Link to="/login" className="btn btn-outline-primary">
-              Iniciar sesión
-            </Link>
-          </div>
-        </form>
+      <div className="register-container">
+        <div className="register-card">
+          <h2>Crear cuenta</h2>
+          <form onSubmit={handleRegister}>
+            <input
+              type="email"
+              placeholder="Correo institucional"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Confirmar contraseña"
+              value={confirmPassword}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+            />
+            {error && <p className="text-danger">{error}</p>}
+            <div className="register-buttons">
+              <button type="submit" className="btn btn-primary">
+                Registrarse
+              </button>
+              <Link to="/login" className="btn btn-outline-primary">
+                Iniciar sesión
+              </Link>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
-
-export default Register;
