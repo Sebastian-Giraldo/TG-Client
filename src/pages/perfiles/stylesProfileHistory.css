@@ -1,37 +1,38 @@
 /* stylesProfileHistory.css */
 
 .ph-container {
-  background: #fff;               /* tarjeta blanca */
-  padding: 2rem;                  /* relleno interior */
-  border-radius: 12px;            /* esquinas redondeadas */
-  max-width: 700px;               /* ancho máximo */
-  margin: 2rem auto;              /* centrado horizontal + margen arriba/abajo */
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  background: #fff;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  max-width: 550px;                     /* reducido */
+  margin: 1rem auto;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);  /* sombra fija */
   text-align: center;
+  font-size: 0.9rem;
 }
 
 .ph-title {
-  font-size: 1.75rem;
-  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
   font-weight: 600;
+  color: #007fff;
 }
 
 .ph-searchForm {
   display: flex;
-  flex-wrap: wrap;                /* para colapsar en móviles */
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-/* Input de búsqueda */
 .ph-input {
   flex: 1;
-  max-width: 300px;               /* ancho idéntico al login */
+  max-width: 250px;
   width: 100%;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
   border: 1px solid #ccc;
   border-radius: 6px;
   transition: border-color .2s;
@@ -41,10 +42,9 @@
   border-color: #1e90ff;
 }
 
-/* Botones */
 .ph-btn {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
   border-radius: 6px;
   cursor: pointer;
   transition: background .2s, color .2s;
@@ -60,79 +60,77 @@
 .ph-btn.ph-clear {
   background: transparent;
   color: #1e90ff;
-  border: 2px solid #1e90ff;
+  border: 1.5px solid #1e90ff;
 }
 .ph-btn.ph-clear:hover {
   background: #1e90ff;
   color: #fff;
 }
 
-/* Para que en desktop los botones queden al lado del input */
 @media (min-width: 600px) {
   .ph-searchForm {
     flex-wrap: nowrap;
   }
 }
 
-/* Mensaje de error */
 .ph-error {
   color: #c00;
-  font-size: 0.95rem;
-  margin-top: 1rem;
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
 }
 
-/* Tabla de resultados */
+/* Tabla */
 .ph-results {
   overflow-x: auto;
 }
 .ph-results table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
 }
 .ph-results th,
 .ph-results td {
-  padding: 0.75rem;
+  padding: 0.5rem;
   text-align: left;
   border-bottom: 1px solid #e0e0e0;
+  font-size: 0.85rem;
 }
 .ph-results th {
   background: #f9f9f9;
   font-weight: 500;
 }
 
-/* Responsive: en móvil que la tabla no se salga */
 @media (max-width: 500px) {
   .ph-results th:nth-child(3),
   .ph-results td:nth-child(3),
   .ph-results th:nth-child(4),
   .ph-results td:nth-child(4) {
-    display: none; /* oculta columnas secundarias */
+    display: none;
   }
 }
+
+/* Paginación */
 .ph-pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 1.5rem 0;
-  gap: 1rem;
+  margin: 1rem 0;
+  gap: 0.75rem;
 }
-
 .ph-pageBtn {
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.8rem;
   border: 1px solid #007fff;
   background: #fff;
   color: #007fff;
   border-radius: 6px;
-  cursor: pointer;
+  font-size: 0.85rem;
 }
-
 .ph-pageBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-
 .ph-pageInfo {
   font-weight: 500;
   color: #333;
+  font-size: 0.85rem;
 }

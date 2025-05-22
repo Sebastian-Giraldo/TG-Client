@@ -12,17 +12,21 @@
   justify-content: center;
   align-items: center;
   padding: 2rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
-/* Tarjeta blanca con sombra y esquinas redondeadas */
+/* Tarjeta blanca con sombra permanente y esquinas redondeadas */
 .info-card {
   background-color: #ffffff;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
   max-width: 480px;
   width: 100%;
   text-align: center;
+  transition: transform 0.3s ease;
+  animation: slideUp 0.8s ease;
 }
 
 /* Título del dato curioso */
@@ -30,18 +34,41 @@
   color: #007fff;
   margin-bottom: 1rem;
   font-size: 1.75rem;
+  font-weight: 600;
 }
 
 /* Texto explicativo */
 .info-card-text {
   color: #333333;
   margin-bottom: 1.5rem;
-  line-height: 1.6;
+  line-height: 1.7;
+  font-size: 1rem;
 }
 
 /* Invitación final */
 .info-card-invite {
   color: #007fff;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1.05rem;
+}
+
+/* Animaciones */
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

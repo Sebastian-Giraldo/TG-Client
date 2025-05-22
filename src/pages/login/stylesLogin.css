@@ -1,31 +1,36 @@
-/* stylesLogin.css */
 .login-container {
-  /* Ocupa toda la ventana para centrar(vertical+horizontal) */
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;              /* ← Aquí el cambio clave */
+  height: 100vh;
   padding: 2rem;
-  background: linear-gradient(to top left, #a0e9fd, #caf4ff);
+  background: linear-gradient(145deg, #a0e9fd, #caf4ff);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeIn 1s ease-in-out;
 }
 
 .login-card {
   background: #ffffff;
-  padding: 3rem 4rem;
-  border-radius: 15px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  padding: 3rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 500px;           /* mismo ancho que register */
+  max-width: 500px;
   text-align: center;
+  animation: slideUp 0.8s ease;
+  transition: box-shadow 0.3s ease;
+}
+
+.login-card:hover {
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
 }
 
 .login-card h2 {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   color: #007bff;
+  font-size: 1.8rem;
 }
 
-/* Inputs a la misma altura y padding que register */
 .login-card input {
   width: 100%;
   height: 50px;
@@ -33,8 +38,15 @@
   margin-bottom: 1rem;
   font-size: 1rem;
   border: 1px solid #ccc;
-  border-radius: 0.5rem;
+  border-radius: 0.7rem;
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.login-card input:focus {
+  border-color: #007bff;
+  outline: none;
 }
 
 .login-buttons {
@@ -45,15 +57,27 @@
 }
 
 .btn {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.6rem;
   font-size: 1rem;
-  border-radius: 0.5rem;
+  border-radius: 12px;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
 
 .btn-primary {
   background-color: #007bff;
@@ -66,7 +90,7 @@
 }
 
 .btn-outline-primary {
-  border: 1px solid #007bff;
+  border: 2px solid #007bff;
   color: #007bff;
   background-color: transparent;
 }
@@ -74,11 +98,6 @@
 .btn-outline-primary:hover {
   background-color: #007bff;
   color: white;
-}
-
-.error {
-  color: red;
-  margin-bottom: 1rem;
 }
 
 .forgot-password {
@@ -89,10 +108,20 @@
   text-decoration: underline;
   padding: 0;
   font-size: 0.9rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
+  transition: color 0.2s;
 }
 
-/* Mensaje de reset */
+.forgot-password:hover {
+  color: #0056b3;
+}
+
+.error {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
 .reset-message {
   font-size: 0.85rem;
   margin-top: 0.5rem;
@@ -102,4 +131,25 @@
 }
 .reset-message.error {
   color: #dc3545;
+}
+
+/* Animaciones */
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
