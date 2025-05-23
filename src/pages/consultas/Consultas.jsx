@@ -7,18 +7,22 @@ function Consultas() {
   const [inputText, setInputText] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setIsLoading(true);
 
     if (!API) {
       setError("⚠️ La URL del backend no está configurada.");
+      setIsLoading(false);
       return;
     }
 
     if (!inputText.trim()) {
       setError("⚠️ Por favor, escribe un texto para analizar.");
+      setIsLoading(false);
       return;
     }
 
@@ -29,21 +33,25 @@ function Consultas() {
         body: JSON.stringify({ text: inputText }),
       });
 
-      if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || `Error ${res.status}: ${res.statusText}`);
+      }
 
       const data = await res.json();
       setResult(data.result);
     } catch (err) {
-      setError("Error al consultar el modelo: " + err.message);
+      setError(err.message || "Error al consultar el modelo");
       setResult(null);
-      console.error("Error al consultar el modelo:", err);
+      console.error("Error:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <>
       <Sidebar />
-
       <div className="consultas-container">
         <div className="consultas-card">
           <h2>
@@ -55,10 +63,15 @@ function Consultas() {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Escribe una frase..."
+              disabled={isLoading}
             />
             <div className="consultas-buttons">
-              <button type="submit" className="btn btn-primary">
-                Analizar
+              <button 
+                type="submit" 
+                className="btn btn-primary"
+                disabled={isLoading}
+              >
+                {isLoading ? "Analizando..." : "Analizar"}
               </button>
               <button
                 type="button"
@@ -68,13 +81,24 @@ function Consultas() {
                   setResult(null);
                   setError(null);
                 }}
+                disabled={isLoading}
               >
                 Limpiar
               </button>
             </div>
           </form>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className={`error-message ${error.includes("cargando") ? "warning-message" : ""}`}>
+              {error}
+              {error.includes("cargando") && (
+                <div className="loading-model">
+                  <p>Los modelos gratuitos de Hugging Face entran en estado de hibernación por inactividad.</p>
+                  <p>Por favor, inténtalo de nuevo en 30 segundos.</p>
+                </div>
+              )}
+            </div>
+          )}
 
           {result && (
             <div className="resultado">
