@@ -1,4 +1,5 @@
 // src/pages/perfiles/ProfileHistory.jsx
+
 import { useState, useEffect } from "react";
 import ResultadosTable from "../../components/ResultadoTable";
 import Sidebar from "../../components/Sidebar";
@@ -6,7 +7,6 @@ import {
   collection,
   getDocs,
   query,
-  orderBy,
   limit,
 } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
@@ -21,31 +21,67 @@ export default function ProfileHistory() {
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 5;
 
-  // Carga inicial
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
         const profilesCol = collection(db, "profiles");
-        const q = query(profilesCol, orderBy("checkedAt", "desc"), limit(1000));
+        const q = query(profilesCol, limit(1000));
         const snapshot = await getDocs(q);
 
-        const docs = snapshot.docs.map((d) => {
-          const data = d.data();
-          return {
-            id: d.id,
-            username: d.id,
-            classification: {
-              label: data.classification?.label ?? "No sensible",
-              score: data.classification?.score ?? 0,
-            },
-            checkedAt: data.checkedAt?.toDate() ?? null,
-            reasons: data.reasons?.map((r) => ({
-              type: r.type,
-              detail: r.detail,
-              map_link: r.map_link,
-            })) ?? [],
-          };
-        });
+        const docs = snapshot.docs
+          .map((d) => {
+            const data = d.data();
+
+            // 1) Fecha de chequeo preferida
+            const fechaChequeoStr = data["Fecha chequeo"] ?? null;
+            const processedAtStr = data.metadata?.processed_at ?? null;
+            const date = fechaChequeoStr
+              ? new Date(fechaChequeoStr)
+              : processedAtStr
+                ? new Date(processedAtStr)
+                : null;
+
+            // 2) Clasificación: parsear "Sensible (score: 0.76)"
+            let label = "No sensible";
+            let score = 0;
+            const rawClass = data["Clasificación"] || data.classification?.label;
+            if (typeof rawClass === "string") {
+              // extraemos con regex
+              const m = rawClass.match(/(.+)\s*\(score:\s*([\d.]+)\)/i);
+              if (m) {
+                label = m[1].trim();
+                score = parseFloat(m[2]);
+              } else {
+                label = rawClass;
+              }
+            } else if (data.classification) {
+              label = data.classification.label;
+              score = data.classification.score;
+            }
+
+            // 3) Razones
+            const rawRazones = data.Razones || data.razones || [];
+            const reasons = rawRazones.map((r) => ({
+              type: r.tipo ?? r.type,
+              detail: r.detalle ?? r.detail,
+              map_link: r.map_link ?? r.mapLink ?? null,
+              extra: r.extra ?? null,
+            }));
+
+            return {
+              id: d.id,
+              username: d.id,
+              classification: { label, score },
+              checkedAt: date,
+              reasons,
+            };
+          })
+          // 4) Orden descendente por fecha real
+          .sort((a, b) => {
+            if (!a.checkedAt) return 1;
+            if (!b.checkedAt) return -1;
+            return b.checkedAt - a.checkedAt;
+          });
 
         setAllProfiles(docs);
         setError(null);
@@ -54,10 +90,11 @@ export default function ProfileHistory() {
         setError("No se pudieron cargar los perfiles. Revisa la consola.");
       }
     };
+
     fetchProfiles();
   }, []);
 
-  // Filtrado + paginación calculados
+  // Filtrado + paginación
   const normalizedTerm = searchTerm.trim().replace(/^@/, "").toLowerCase();
   const filtered = normalizedTerm
     ? allProfiles.filter((p) =>
@@ -71,26 +108,15 @@ export default function ProfileHistory() {
 
   // Handlers
   const handleSearch = (e) => {
-  e.preventDefault();
-
-  const term = searchTerm.trim().replace(/^@/, "").toLowerCase();
-  if (term === "") {
-    setError(null);
-    return setCurrentPage(1);
-  }
-
-  const filtered = allProfiles.filter((p) =>
-    p.username.toLowerCase().includes(term)
-  );
-
-  setCurrentPage(1);
-  if (filtered.length === 0) {
-    setError(`No existen registros con el perfil “${searchTerm.trim()}”`);
-  } else {
-    setError(null);
-  }
-
-};
+    e.preventDefault();
+    setCurrentPage(1);
+    if (!normalizedTerm) return setError(null);
+    if (filtered.length === 0) {
+      setError(`No existen registros con el perfil “${searchTerm.trim()}”`);
+    } else {
+      setError(null);
+    }
+  };
 
   const handleClear = () => {
     setSearchTerm("");
@@ -131,7 +157,6 @@ export default function ProfileHistory() {
           <ResultadosTable allResults={currentSlice} />
         </div>
 
-        {/* Controles de paginación */}
         {filtered.length > perPage && (
           <div className="ph-pagination">
             <button
