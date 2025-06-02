@@ -27,15 +27,20 @@ function Consultas() {
     }
 
     try {
-      const res = await fetch(`${API}/sentiment/predict`, {
+      const endpoint = `${API}/sentiment/predict`;
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: inputText }),
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || `Error ${res.status}: ${res.statusText}`);
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.detail || 
+          errorData.message || 
+          `Error ${res.status}: ${res.statusText}`
+        );
       }
 
       const data = await res.json();
@@ -43,7 +48,7 @@ function Consultas() {
     } catch (err) {
       setError(err.message || "Error al consultar el modelo");
       setResult(null);
-      console.error("Error:", err);
+      console.error("Error en la consulta:", err);
     } finally {
       setIsLoading(false);
     }
@@ -57,6 +62,7 @@ function Consultas() {
           <h2>
             ¿Quieres saber si el caption de tu publicación revela información sensible?
           </h2>
+          
           <form onSubmit={handleSubmit}>
             <textarea
               className="form-control"
@@ -64,18 +70,26 @@ function Consultas() {
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Escribe una frase..."
               disabled={isLoading}
+              rows={5}
             />
+            
             <div className="consultas-buttons">
               <button 
                 type="submit" 
                 className="btn btn-primary"
-                disabled={isLoading}
+                disabled={isLoading || !inputText.trim()}
               >
-                {isLoading ? "Analizando..." : "Analizar"}
+                {isLoading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Analizando...
+                  </>
+                ) : "Analizar"}
               </button>
+              
               <button
                 type="button"
-                className="btn btn-outline-primary"
+                className="btn btn-outline-secondary"
                 onClick={() => {
                   setInputText("");
                   setResult(null);
@@ -88,35 +102,47 @@ function Consultas() {
             </div>
           </form>
 
+          {/* Mensajes de error mejorados */}
           {error && (
-            <div className={`error-message ${error.includes("cargando") ? "warning-message" : ""}`}>
+            <div className={`alert ${error.includes("cargando") ? "alert-warning" : "alert-danger"} mt-3`}>
               {error}
               {error.includes("cargando") && (
-                <div className="loading-model">
-                  <p>Los modelos gratuitos de Hugging Face entran en estado de hibernación por inactividad.</p>
+                <div className="mt-2">
+                  <p>Los modelos gratuitos de Hugging Face pueden entrar en estado de hibernación.</p>
                   <p>Por favor, inténtalo de nuevo en 30 segundos.</p>
                 </div>
               )}
             </div>
           )}
 
+          {/* Resultados */}
           {result && (
-            <div className="resultado">
+            <div className="resultado mt-4">
               <h3>Resultado:</h3>
-              <table className="resultado-table">
-                <thead>
-                  <tr>
-                    <th>Etiqueta</th>
-                    <th>Puntuación</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{result.label}</td>
-                    <td>{result.score != null ? result.score.toFixed(4) : "N/A"}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="card">
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-md-6">
+                      <strong>Etiqueta:</strong> 
+                      <span className={`badge ${
+                        result.label === "Sensible" 
+                          ? "bg-danger" 
+                          : "bg-success"
+                      } ms-2`}>
+                        {result.label}
+                      </span>
+                    </div>
+                    <div className="col-md-6">
+                      <strong>Puntuación:</strong> 
+                      <span className="ms-2">
+                        {result.score != null 
+                          ? result.score.toFixed(4) 
+                          : "N/A"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
