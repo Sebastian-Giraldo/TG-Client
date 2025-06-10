@@ -136,3 +136,46 @@
   font-weight: 500;
   color: #333;
 }
+
+/* Badges */
+.ph-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 0.25rem;
+  color: #fff;
+  margin-right: 0.5rem;
+}
+.ph-badge-success { background-color: #28a745; }
+.ph-badge-danger  { background-color: #dc3545; }
+
+/* Botón “Ver mapa” */
+.ph-map-btn {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  border: 1px solid #007bff;
+  border-radius: 6px;
+  color: #007bff;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+
+  /* Evitar que el texto se divida en dos líneas */
+  white-space: nowrap;
+}
+
+.ph-map-btn:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+/* Evita que el badge y el score se rompan en varias líneas */
+.ph-classification-cell {
+  white-space: nowrap;
+}
+
+/* (Opcional) para separar badge y score */
+.ph-score {
+  margin-left: 0.5rem;
+}

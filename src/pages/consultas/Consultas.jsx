@@ -1,12 +1,15 @@
-import { useState } from "react";
+// src/pages/consultas/Consultas.jsx
+import React, { useState } from "react";
 import Sidebar from "../../components/Sidebar";
+import { useAutoDismissMessage } from "../../hooks/useAutoDismissMessage";
+import ErrorBox from "../../components/ErrorBox";
 import "./stylesConsultas.css";
 
 function Consultas() {
   const API = process.env.REACT_APP_API_URL;
   const [inputText, setInputText] = useState("");
   const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
+  const [error, setError] = useAutoDismissMessage(8000);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -35,20 +38,23 @@ function Consultas() {
       });
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(
-          errorData.detail || 
-          errorData.message || 
-          `Error ${res.status}: ${res.statusText}`
-        );
+        const contentType = res.headers.get("Content-Type") || "";
+        if (contentType.includes("application/json")) {
+          const errJson = await res.json();
+          throw new Error(errJson.detail || errJson.message);
+        } else {
+          throw new Error(`Error ${res.status}: ${res.statusText}`);
+        }
       }
 
       const data = await res.json();
       setResult(data.result);
     } catch (err) {
-      setError(err.message || "Error al consultar el modelo");
-      setResult(null);
       console.error("Error en la consulta:", err);
+      // definir tipo según contenido del mensaje
+      const isWarn = err.message.toLowerCase().includes("cargando");
+      setError(err.message || "Error al consultar el modelo", isWarn ? "warning" : "danger");
+      setResult(null);
     } finally {
       setIsLoading(false);
     }
@@ -102,20 +108,11 @@ function Consultas() {
             </div>
           </form>
 
-          {/* Mensajes de error mejorados */}
-          {error && (
-            <div className={`alert ${error.includes("cargando") ? "alert-warning" : "alert-danger"} mt-3`}>
-              {error}
-              {error.includes("cargando") && (
-                <div className="mt-2">
-                  <p>Los modelos gratuitos de Hugging Face pueden entrar en estado de hibernación.</p>
-                  <p>Por favor, inténtalo de nuevo en 30 segundos.</p>
-                </div>
-              )}
-            </div>
-          )}
+          <ErrorBox 
+            message={error} 
+            type={error && error.toLowerCase().includes("cargando") ? "warning" : "danger"} 
+          />
 
-          {/* Resultados */}
           {result && (
             <div className="resultado mt-4">
               <h3>Resultado:</h3>
@@ -134,7 +131,7 @@ function Consultas() {
                     </div>
                     <div className="col-md-6">
                       <strong>Puntuación:</strong> 
-                      <span className="ms-2">
+                      <span className="ms-2 score-text">
                         {result.score != null 
                           ? result.score.toFixed(4) 
                           : "N/A"}

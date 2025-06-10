@@ -1,14 +1,21 @@
-// src/pages/validar-perfil/VerificarPerfil.jsx
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+
 import "./stylesVerificarPerfil.css";
 import Sidebar from "../../components/Sidebar";
 
 function VerificarPerfil() {
-  const API = process.env.REACT_APP_API_URL; 
+  const API = process.env.REACT_APP_API_URL;
   const [username, setUsername] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [result, setResult] = useState(null);
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState(null);
+  const [result, setResult]     = useState(null);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   const cleanUser = (u) => u.trim().replace(/^@+/, "");
 
@@ -23,17 +30,31 @@ function VerificarPerfil() {
     try {
       const res = await fetch(`${API}/api/verificar-perfil`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // 'Authorization': `Bearer ${token}`  // si usas JWT
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: uname }),
       });
-      if (!res.ok) throw new Error(await res.text());
+      if (!res.ok) {
+        const ct = res.headers.get("Content-Type") || "";
+        if (ct.includes("application/json")) {
+          const err = await res.json();
+          const d = err.detail || "";
+          if (d.includes("401") && d.includes("Please wait")) {
+            throw new Error(
+              "Instagram bloqueó temporalmente la consulta. Por favor, intenta de nuevo en unos minutos."
+            );
+          } else {
+            throw new Error("Error del servidor: " + d);
+          }
+        } else {
+          const text = await res.text();
+          throw new Error(text || "Error desconocido");
+        }
+      }
       const data = await res.json();
       setResult(data);
     } catch (e) {
-      setError(e.message);
+      console.error("Error en la verificación:", e);
+      setError(e.message || "Ocurrió un error inesperado.");
     } finally {
       setLoading(false);
     }
@@ -45,6 +66,7 @@ function VerificarPerfil() {
       <div className="vp-container">
         <div className="vp-card">
           <h2>Verificar perfil de Instagram</h2>
+
           <form onSubmit={handleSubmit}>
             <input
               type="text"
@@ -56,6 +78,14 @@ function VerificarPerfil() {
               {loading ? "Cargando…" : "Verificar"}
             </button>
           </form>
+
+          {loading && (
+            <div className="loading-message">
+              <p>Cargando modelo...</p>
+              <p>Esto puede tardar unos segundos.</p>
+            </div>
+          )}
+
           {error && <div className="vp-error">{error}</div>}
 
           {result && (
@@ -68,13 +98,19 @@ function VerificarPerfil() {
                   <span className="vp-badge safe">Sin riesgo</span>
                 )}
               </h3>
+
               <ul className="vp-reasons">
                 {result.reasons.map((r, i) => (
                   <li key={i}>
                     {r.detail}{" "}
                     {r.map_link && (
-                      <a href={r.map_link} target="_blank" rel="noreferrer">
-                        [Mapa]
+                      <a
+                        className="vp-map-btn"
+                        href={r.map_link}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Ver en el mapa
                       </a>
                     )}
                   </li>
