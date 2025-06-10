@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -6,62 +6,65 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import { auth } from "../../firebase/firebase";
+import { useAutoDismissMessage } from "../../hooks/useAutoDismissMessage";
+import ErrorBox from "../../components/ErrorBox";
 import "./stylesLogin.css";
 
 function Login() {
   const navigate = useNavigate();
   const { setUser } = useUser();
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [resetMsg, setResetMsg] = useState("");
+
+  // 1) error de login
+  const [error, setError] = useAutoDismissMessage(8000);
+
+  // 2) reset password: error y success
+  const [resetErrorMsg,   setResetErrorMsg]   = useAutoDismissMessage(8000);
+  const [resetSuccessMsg, setResetSuccessMsg] = useAutoDismissMessage(8000);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
-    setResetMsg("");
+    setError(null);
+    setResetErrorMsg(null);
+    setResetSuccessMsg(null);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const newUser = userCredential.user;
-      const token = await newUser.getIdToken();
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      const token = await cred.user.getIdToken();
       const userData = {
-        uid: newUser.uid,
-        name: newUser.displayName || "",
-        email: newUser.email,
-        photoURL: newUser.photoURL || "",
+        uid:         cred.user.uid,
+        name:        cred.user.displayName || "",
+        email:       cred.user.email,
+        photoURL:    cred.user.photoURL || "",
         accessToken: token,
       };
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
       navigate("/dashboard");
-    } catch (err) {
-      setError(
-        "Error en el inicio de sesión<br> Usuario y/o contraseña incorrectos"
-      );
+    } catch {
+      setError("Usuario y/o contraseña incorrectos");
     }
   };
 
   const handleResetPassword = async () => {
-    setError("");
-    setResetMsg("");
+    setError(null);
+    setResetErrorMsg(null);
+    setResetSuccessMsg(null);
+
     if (!email) {
-      setResetMsg("Por favor ingresa tu correo para recuperar tu contraseña.");
+      setResetErrorMsg("Por favor ingresa tu correo para recuperar tu contraseña.");
       return;
     }
+
     try {
       await sendPasswordResetEmail(auth, email);
-      setResetMsg(
+      setResetSuccessMsg(
         `✔️ Te hemos enviado un correo a ${email}. Revisa tu bandeja de entrada.`
       );
-    } catch (err) {
-      console.error(err);
-      setResetMsg("❌ No se pudo enviar el correo de recuperación.");
+    } catch {
+      setResetErrorMsg("❌ No se pudo enviar el correo de recuperación.");
     }
   };
 
@@ -75,7 +78,7 @@ function Login() {
             type="email"
             placeholder="Correo institucional"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             required
           />
 
@@ -83,16 +86,12 @@ function Login() {
             type="password"
             placeholder="Contraseña"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             required
           />
 
-          {error && (
-            <p
-              className="error"
-              dangerouslySetInnerHTML={{ __html: error }}
-            />
-          )}
+          {/* Error de login */}
+          <ErrorBox message={error} type="danger" />
 
           <button
             type="button"
@@ -102,17 +101,13 @@ function Login() {
             ¿Olvidaste tu contraseña?
           </button>
 
-          {resetMsg && (
-            <p
-              className={`reset-message ${
-                resetMsg.startsWith("✔️") ? "success" : "error"
-              }`}
-            >
-              {resetMsg}
-            </p>
-          )}
+          {/* Error al enviar reset */}
+          <ErrorBox message={resetErrorMsg} type="danger" />
 
-          <div className="login-buttons" style={{ display: "flex", gap: "1rem" }}>
+          {/* Éxito al enviar reset */}
+          <ErrorBox message={resetSuccessMsg} type="success" />
+
+          <div className="login-buttons">
             <button type="submit" className="btn btn-primary">
               Iniciar sesión
             </button>

@@ -1,4 +1,4 @@
-// src/components/ModalVerifyCode.jsx
+import React from "react";
 
 export default function ModalVerifyCode({
   email,
@@ -10,8 +10,12 @@ export default function ModalVerifyCode({
 }) {
   return (
     <>
-      {/* Backdrop semitransparente */}
-      <div className="modal-backdrop fade show" />
+      {/* Backdrop */}
+      <div
+        className="modal-backdrop fade show"
+        onClick={onClose}
+        style={{ cursor: "pointer" }}
+      />
 
       {/* Modal */}
       <div
@@ -20,13 +24,11 @@ export default function ModalVerifyCode({
         role="dialog"
         aria-modal="true"
       >
-        {/* Aquí aplicamos el centrado vertical y scroll si hiciera falta */}
         <div
           className="modal-dialog modal-dialog-centered modal-dialog-scrollable"
           role="document"
         >
           <div className="modal-content">
-
             {/* Header */}
             <div className="modal-header">
               <h5 className="modal-title">Verificación de correo</h5>
@@ -35,14 +37,13 @@ export default function ModalVerifyCode({
                 className="btn-close"
                 aria-label="Close"
                 onClick={onClose}
-                data-bs-dismiss="modal"
               />
             </div>
 
             {/* Body */}
             <div className="modal-body">
               <p>
-                Hemos enviado un código de 6 dígitos a <b>{email}</b>.<br/>
+                Hemos enviado un código de 6 dígitos a <b>{email}</b>.<br />
                 Por favor, introdúcelo:
               </p>
               <input
@@ -50,11 +51,15 @@ export default function ModalVerifyCode({
                 className="form-control form-control-sm w-auto mx-auto"
                 maxLength={6}
                 value={inputCode}
-                onChange={(e) => setInputCode(e.target.value.replace(/\D/g, ""))}
+                onChange={(e) =>
+                  setInputCode(e.target.value.replace(/\D/g, ""))
+                }
                 autoFocus
               />
               {codeError && (
-                <div className="text-danger mt-2 text-center">{codeError}</div>
+                <div className="text-danger mt-2 text-center">
+                  {codeError}
+                </div>
               )}
             </div>
 
@@ -64,7 +69,6 @@ export default function ModalVerifyCode({
                 type="button"
                 className="btn btn-secondary"
                 onClick={onClose}
-                data-bs-dismiss="modal"
               >
                 Cerrar
               </button>
@@ -76,7 +80,6 @@ export default function ModalVerifyCode({
                 Verificar y crear cuenta
               </button>
             </div>
-
           </div>
         </div>
       </div>
