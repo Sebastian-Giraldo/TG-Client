@@ -3,6 +3,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 
 // 1) Creamos el contexto que contendrá la información de autenticación\ nconst UserContext = createContext();
+const UserContext = createContext();
 
 // 2) Hook personalizado para acceder al contexto de usuario desde cualquier componente
 export const useUser = () => {

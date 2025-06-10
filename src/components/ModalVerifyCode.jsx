@@ -1,34 +1,24 @@
+// src/components/ModalVerifyCode.jsx
 import React from "react";
 
-// Importa los estilos específicos para este modal
-import "./stylesVerificarPerfil.css";
-
-// Componente Sidebar para navegación lateral
-import Sidebar from "../../components/Sidebar";
-
-/**
- * Componente ModalVerifyCode:
- * Muestra un modal superpuesto donde el usuario ingresa
- * el código de 6 dígitos que se envió por correo
- */
 export default function ModalVerifyCode({
-  email,         // Dirección de correo donde se envió el código
-  inputCode,     // Valor actual del input del código
-  setInputCode,  // Función para actualizar el valor del input
-  codeError,     // Mensaje de error si el código es inválido
-  onVerify,      // Callback que verifica y crea la cuenta
-  onClose,       // Callback para cerrar el modal
+  email,
+  inputCode,
+  setInputCode,
+  codeError,
+  onVerify,
+  onClose,
 }) {
   return (
     <>
-      {/* Capa semitransparente detrás del modal; cierra al hacer clic */}
+      {/* Backdrop */}
       <div
         className="modal-backdrop fade show"
         onClick={onClose}
         style={{ cursor: "pointer" }}
       />
 
-      {/* Contenedor principal del modal */}
+      {/* Modal */}
       <div
         className="modal fade show d-block"
         tabIndex={-1}
@@ -40,10 +30,9 @@ export default function ModalVerifyCode({
           role="document"
         >
           <div className="modal-content">
-            {/* Encabezado del modal */}
+            {/* Header */}
             <div className="modal-header">
               <h5 className="modal-title">Verificación de correo</h5>
-              {/* Botón para cerrar modal */}
               <button
                 type="button"
                 className="btn-close"
@@ -52,13 +41,12 @@ export default function ModalVerifyCode({
               />
             </div>
 
-            {/* Cuerpo del modal */}
+            {/* Body */}
             <div className="modal-body">
               <p>
                 Hemos enviado un código de 6 dígitos a <b>{email}</b>.<br />
                 Por favor, introdúcelo:
               </p>
-              {/* Input para ingresar solamente dígitos, enfoque automático */}
               <input
                 type="text"
                 className="form-control form-control-sm w-auto mx-auto"
@@ -69,7 +57,6 @@ export default function ModalVerifyCode({
                 }
                 autoFocus
               />
-              {/* Mensaje de error si el código es incorrecto */}
               {codeError && (
                 <div className="text-danger mt-2 text-center">
                   {codeError}
@@ -77,9 +64,8 @@ export default function ModalVerifyCode({
               )}
             </div>
 
-            {/* Pie de modal con acciones */}
+            {/* Footer */}
             <div className="modal-footer">
-              {/* Botón para cerrar */}
               <button
                 type="button"
                 className="btn btn-secondary"
@@ -87,7 +73,6 @@ export default function ModalVerifyCode({
               >
                 Cerrar
               </button>
-              {/* Botón para verificar y crear cuenta */}
               <button
                 type="button"
                 className="btn btn-primary"
