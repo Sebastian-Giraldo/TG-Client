@@ -1,7 +1,7 @@
 // src/pages/resultados/Resultados.jsx
 import React from "react";
-import Sidebar from "../../components/Sidebar"; // Componente de navegación lateral\ nimport "./stylesResultados.css"; // Estilos específicos de la página
-
+import Sidebar from "../../components/Sidebar"; // Componente de navegación lateral
+import "./stylesResultados.css";                // Estilos específicos de la página
 /**
  * Componente Resultados:
  * - Muestra los resultados de clasificación de dos modelos
