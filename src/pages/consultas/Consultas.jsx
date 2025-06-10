@@ -158,7 +158,7 @@ function Consultas() {
                     <div className="col-md-6">
                       <strong>Etiqueta:</strong>
                       <span
-                        className={`badge ms-2 $
+                    className={`badge ms-2 ${
                           result.label === "Sensible"
                             ? "bg-danger"
                             : "bg-success"
